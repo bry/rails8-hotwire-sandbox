@@ -1,0 +1,68 @@
+services:
+  app:
+    build: .
+    image: rails8-ruby34-ubuntu:latest
+    container_name: rails-app
+    command: zsh -lc "bundle install && bin/rails db:prepare && bin/rails server -b 0.0.0.0 -p 3000"
+    env_file: [.env]
+    environment:
+      RAILS_ENV: development
+      DB_HOST: db
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/1
+      NODE_OPTIONS: --max-old-space-size=2048
+      SHELL: /usr/bin/zsh
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+      - node_modules:/app/node_modules
+      - ${HOME}/.zshrc:/root/.zshrc:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
+
+  db:
+    image: postgres:16
+    container_name: rails-postgres
+    env_file: [.env]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432" # expose for local tools (psql, GUI). Remove if not needed.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: rails-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379" # expose for local debugging. Remove if not needed.
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - redisdata:/data
+
+volumes:
+  bundle:
+  node_modules:
+  pgdata:
+  redisdata:
