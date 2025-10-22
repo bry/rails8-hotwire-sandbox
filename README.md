@@ -94,8 +94,27 @@ bin/rails test:system
 | PostgreSQL        | Database                | `5432` |
 | Redis             | Cache / Background jobs | `6379` |
 
+
+### Docker Commands
+
+1. Build Docker images
 ```bash
-docker compose up
+docker compose build
+```
+
+2. Start Docker services
+```bash
+docker compose up -d
+````
+
+3. Inspect Docker running processes & services
+```bash
+docker compose ps
+```
+
+4. Execute into Rails service
+```bash 
+docker compose exec app bash
 ```
 
 ## 🚀 Deployment Instructions
