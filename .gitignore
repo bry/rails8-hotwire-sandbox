@@ -4,13 +4,6 @@
 # belong in git's global ignore instead:
 # `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
 
-# Kamal deploy (ignore secrets)
-.kamal/secrets
-.kamal/secrets.*
-.kamal/secrets-common
-.kamal/.env
-.kamal/*.env
-
 # Ignore bundler config.
 /.bundle
 
