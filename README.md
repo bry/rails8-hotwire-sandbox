@@ -189,8 +189,12 @@ Dockerfile
 
 ```bash
 .env
-kamal/secrets
-kamal/secrets.*
+```
+
+Best practice to configure .env.example and then copy .env.example to .env
+
+```bash
+cp .env.exmaple .env
 ```
 
 
